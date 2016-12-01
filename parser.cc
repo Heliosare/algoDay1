@@ -168,7 +168,9 @@ void Parser::display() {
 	for (auto it = _arcTime.begin(); it != _arcTime.end(); it++) {
 		time += *it;
 	}
-	std::cout << std::to_string(_graph.NumNodes()) + " nodes / " + std::to_string(_graph.NumArcs()) + " arcs / " + std::to_string(time) + " seconds" << std::endl;
+	std::cout << std::to_string(_graph.NumNodes()) << std::endl;
+	std::cout << std::to_string(_graph.NumArcs()) << std::endl;
+	std::cout << std::to_string(time) << std::endl;
 }
 
 void Parser::parse(string filename) {
