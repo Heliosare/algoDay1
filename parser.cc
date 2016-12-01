@@ -71,7 +71,17 @@ void Parser::readFile(string filename) {
 }
 
 double Parser::calcDistance(double lat1, double lng1, double lat2, double lng2) {
-	return (2.0 * 6371.0088 * std::asin(std::sqrt(std::pow(std::sin((lat2 - lat1) / 2.0), 2.0)) + std::cos(lat1) * std::cos(lat2) * std::pow(std::sin((lng2 - lng1) / 2.0), 2.0)));
+	double r = 6371008;
+	double un = lat1 * M_PI / 180;
+	double deux = lat2 * M_PI / 180;
+	double delta = (lat2 - lat1) * M_PI / 180;
+	double alpha = (lng1 - lng2) * M_PI / 180;
+
+	double a = std::sin(delta / 2) * std::sin(delta / 2) +
+	 						std::cos(un) * std::cos(deux) *
+							std::sin(alpha / 2) * std::sin(alpha /2);
+	double c = 2 * std::atan2(std::sqrt(a), std::sqrt(1-a));
+	return r * c;
 }
 
 int Parser::isANode(double lat, double lng) {
@@ -125,14 +135,14 @@ void Parser::computeNodesMap() {
 					if (nodeIndex != -1) {
 						int fromIndex = isANode(fLat, fLng);
 						_graph.AddArc(fromIndex, nodeIndex);
+						_arcTime.push_back(actualDistance / ((double)actualSpeed * 1000 / 3600));
 						if (!isOneWay) {
 							_graph.AddArc(nodeIndex, fromIndex);
+							_arcTime.push_back(actualDistance / ((double)actualSpeed * 1000 / 3600));
 						}
 						fLat = actLat;
 						fLng = actLng;
-						//calcule temps et set dans un vector avec index de l'arc retourner à la création de larc
-						//set actual distance to 0.0
-						//std::cout << std::to_string(actualDistance) << std::endl;
+						actualDistance = 0.0f;
 					}
 				}
 				alt = false;
@@ -154,7 +164,11 @@ void Parser::computeNodesMap() {
 }
 
 void Parser::display() {
-	std::cout << std::to_string(_graph.NumNodes()) + " nodes / " + std::to_string(_graph.NumArcs()) + " arcs" << std::endl;
+	double time = 0.0f;
+	for (auto it = _arcTime.begin(); it != _arcTime.end(); it++) {
+		time += *it;
+	}
+	std::cout << std::to_string(_graph.NumNodes()) + " nodes / " + std::to_string(_graph.NumArcs()) + " arcs / " + std::to_string(time) + " seconds" << std::endl;
 }
 
 void Parser::parse(string filename) {
@@ -164,7 +178,6 @@ void Parser::parse(string filename) {
 	_graph.AddNode(_nodeMap.size() - 1);
 	computeNodesMap();
 	display();
-	std::cout << calcDistance(33, 1, -45, -9) << std::endl;
 	/*for (auto it = this->_nodeMap.begin(); it != this->_nodeMap.end(); it++) {
 		std::cout << std::to_string(it->first.first) + " ; " + std::to_string(it->first.second) + " ; " + std::to_string(it->second) << std::endl;
 	}*/

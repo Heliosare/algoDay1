@@ -15,6 +15,7 @@ class Parser {
 	Graph _graph;
 	vector<string> _fields;
 	map<pair<double, double>, int> _nodeMap;
+	vector<double> _arcTime;
 	void readFile(string filename);
 	void countNodes();
 	void cleanNodesMap();
