@@ -19,7 +19,9 @@ class Parser {
 	void countNodes();
 	void cleanNodesMap();
 	void computeNodesMap();
-	void displayNodeNum();
+	void display();
+	int isANode(double lat, double lng);
+	double calcDistance(double lat1, double lng1, double lat2, double lng2);
 public:
 	Parser();
 	~Parser();
